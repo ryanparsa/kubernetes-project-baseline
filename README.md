@@ -31,6 +31,8 @@ A production-ready baseline for deploying a service on Kubernetes. Replace every
 
 ## Optional Add-ons
 
+> None of these are required. They complement the baseline depending on your needs.
+
 | Tool | Notes |
 |------------|-------|
 | [cert-manager](https://cert-manager.io/) | Automates TLS certificate provisioning instead of manual `project-n-tls` secret |
