@@ -12,7 +12,7 @@ spec:
   targetRef:
     apiVersion: "apps/v1"
     kind: Deployment
-    name: project-n
+    name: project-n-deployment
   updatePolicy:
     # "Off" means VPA only provides recommendations — it does not restart or resize pods
     # Safe to run alongside HPA since it never mutates the deployment

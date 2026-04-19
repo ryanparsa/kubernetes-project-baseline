@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: project-n
+  name: project-n-deployment
   namespace: project-n
   labels:
     app.kubernetes.io/name: project-n
@@ -41,7 +41,7 @@ spec:
         app.kubernetes.io/version: "1.0.0"
 
     spec:
-      serviceAccountName: project-n
+      serviceAccountName: project-n-sa
       automountServiceAccountToken: false
       # Spread pods evenly across nodes to avoid single points of failure
       topologySpreadConstraints:

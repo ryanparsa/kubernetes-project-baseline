@@ -1,7 +1,7 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
-  name: project-n
+  name: project-n-gw
   namespace: project-n
   labels:
     app.kubernetes.io/name: project-n

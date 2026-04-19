@@ -1,0 +1,38 @@
+name: Test with kind
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create kind cluster
+        uses: helm/kind-action@v1
+        with:
+          cluster_name: test
+
+      - name: Install Gateway API CRDs
+        run: kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.1/standard-install.yaml
+
+      - name: Install VPA CRDs
+        run: |
+          kubectl apply -f https://raw.githubusercontent.com/kubernetes/autoscaler/master/vertical-pod-autoscaler/deploy/vpa-v1-crd-gen.yaml
+
+      - name: Apply manifests
+        run: |
+          kubectl apply -f namespace.yaml
+          kubectl apply -f .
+
+      - name: Wait for deployment
+        run: kubectl rollout status deployment/project-n-deployment -n project-n --timeout=120s
+
+      - name: Verify resources
+        run: |
+          kubectl get all -n project-n
+          kubectl get gateway,httproute -n project-n
