@@ -43,6 +43,12 @@ A production-ready baseline for deploying a service on Kubernetes. Replace every
 | [cert-manager](https://cert-manager.io/) | Automates TLS certificate provisioning instead of manual `project-n-tls` secret |
 | [Sealed Secrets](https://github.com/bitnami-labs/sealed-secrets) | Encrypts `project-n-secret` for safe GitOps storage |
 | [External Secrets](https://external-secrets.io/) | Syncs secrets from external vaults (AWS, GCP, Vault, etc.) |
+| [Secrets Store CSI Driver](https://github.com/kubernetes-sigs/secrets-store-csi-driver) | Mounts secrets from external vaults directly as volumes - alternative to External Secrets |
+| [External DNS](https://github.com/kubernetes-sigs/external-dns) | Automatically creates DNS records for the Gateway hostname |
+| [Karpenter](https://github.com/kubernetes-sigs/karpenter) | Node autoscaler - the `safe-to-evict` annotation on the pod template is compatible with it |
+| [Descheduler](https://github.com/kubernetes-sigs/descheduler) | Rebalances pods across nodes - complements the topology spread constraint |
+| [Security Profiles Operator](https://github.com/kubernetes-sigs/security-profiles-operator) | Manages seccomp and AppArmor profiles - extends the `seccompProfile: RuntimeDefault` used here |
+| [External DNS](https://github.com/kubernetes-sigs/external-dns) | Automatically creates DNS records for the Gateway hostname |
 
 ## Usage
 
