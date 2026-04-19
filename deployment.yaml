@@ -43,6 +43,10 @@ spec:
     spec:
       serviceAccountName: project-n-sa
       automountServiceAccountToken: false
+      # Required by PSA restricted profile
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
       # Spread pods evenly across nodes to avoid single points of failure
       topologySpreadConstraints:
         - maxSkew: 1
