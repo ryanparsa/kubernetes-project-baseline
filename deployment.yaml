@@ -10,7 +10,7 @@ metadata:
     app.kubernetes.io/managed-by: kubectl
     app.kubernetes.io/version: "1.0.0"
 spec:
-  replicas: 1
+  # replicas is intentionally omitted - managed by HPA
 
   # Keep only 3 old ReplicaSets for rollback (default 10 is wasteful)
   revisionHistoryLimit: 3
@@ -74,9 +74,11 @@ spec:
             requests:
               cpu: 100m
               memory: 128Mi
+              ephemeral-storage: 64Mi
             limits:
               cpu: 200m
               memory: 256Mi
+              ephemeral-storage: 128Mi
 
           # Configure probes for your application
           # livenessProbe:
@@ -111,7 +113,8 @@ spec:
           securityContext:
             # Satisfies PSA restricted profile
             runAsNonRoot: true
-            runAsUser: 1000
+            runAsUser: 10000
+            runAsGroup: 10000
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false
             capabilities:

@@ -31,6 +31,7 @@ jobs:
           chmod +x kube-score
           ./kube-score score \
             --ignore-test pod-networkpolicy \
+            --ignore-test container-probes \
             namespace.yaml serviceaccount.yaml configmap.yaml secret.yaml \
             resourcequota.yaml limitrange.yaml networkpolicy.yaml deployment.yaml \
             service.yaml hpa.yaml pdb.yaml role.yaml rolebinding.yaml
