@@ -26,21 +26,10 @@ A production-ready baseline for deploying a service on Kubernetes. Replace every
 | `pdb.yaml` | PodDisruptionBudget | Maintains at least 2 pods during voluntary disruptions | — |
 | `role.yaml` | Role | Empty RBAC Role - add rules here as your workload requires | — |
 | `rolebinding.yaml` | RoleBinding | Binds the Role to the workload ServiceAccount | — |
-| `gateway.yaml` | Gateway | Gateway with HTTP (80) and HTTPS (443) listeners | [Gateway API CRDs](https://gateway-api.sigs.k8s.io/) + controller |
-| `httproute.yaml` | HTTPRoute (x2) | HTTP->HTTPS redirect (301) + HTTPS backend routing | [Gateway API CRDs](https://gateway-api.sigs.k8s.io/) + controller |
+| `gateway.yaml` | Gateway | Gateway with HTTP (80) and HTTPS (443) listeners | [Gateway API CRDs](https://gateway-api.sigs.k8s.io/) + [controller](https://gateway-api.sigs.k8s.io/implementations/) |
+| `httproute.yaml` | HTTPRoute (x2) | HTTP->HTTPS redirect (301) + HTTPS backend routing | [Gateway API CRDs](https://gateway-api.sigs.k8s.io/) + [controller](https://gateway-api.sigs.k8s.io/implementations/) |
 
 ## Prerequisites
-
-### Required
-
-| Dependency | Notes |
-|------------|-------|
-| [Gateway API](https://gateway-api.sigs.k8s.io/) CRDs | Needed for Gateway and HTTPRoute resources |
-| [Vertical Pod Autoscaler](https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler) CRDs | Needed for VPA resource |
-| [Metrics Server](https://github.com/kubernetes-sigs/metrics-server) | Needed for HPA to read CPU/memory utilization |
-| Gateway controller | Set `gatewayClassName` in `gateway.yaml` to match your choice - [Traefik](https://traefik.io/traefik/), [Envoy Gateway](https://gateway.envoyproxy.io/), [NGINX Gateway Fabric](https://github.com/nginxinc/nginx-gateway-fabric), [Cilium](https://cilium.io/) |
-
-### Recommended
 
 | Dependency | Notes |
 |------------|-------|
