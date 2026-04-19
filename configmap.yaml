@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: project-n-cm
+  namespace: project-n
+  labels:
+    app.kubernetes.io/name: project-n
+    app.kubernetes.io/component: server
+    app.kubernetes.io/part-of: project-n
+    app.kubernetes.io/managed-by: kubectl
+data:
+  # All keys are loaded as environment variables via envFrom in the Deployment
+  # Safe for non-sensitive config - use Secret for credentials
+  LOG_LEVEL: info

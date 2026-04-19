@@ -25,10 +25,11 @@ spec:
       hostname: project-n.example.com
       tls:
         mode: Terminate
-        # Secret must exist in the same namespace; provision with cert-manager or manually
+        # Defined in secret.yaml - provision with cert-manager or replace manually before applying
         certificateRefs:
           - name: project-n-tls
             kind: Secret
+            group: ""
       allowedRoutes:
         namespaces:
           from: Same

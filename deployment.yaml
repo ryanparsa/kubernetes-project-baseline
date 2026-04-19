@@ -100,22 +100,45 @@ spec:
               drop:
                 - ALL
 
+          # Load all ConfigMap keys as environment variables
+          envFrom:
+            - configMapRef:
+                name: project-n-cm
+
+          # Sample volumeMounts - adjust or remove to match your image's writable dir requirements
           volumeMounts:
+            # emptyDir mounts must be writable - nginx writes to these at runtime
             - name: tmp
               mountPath: /tmp
+              readOnly: false
             - name: nginx-cache
               mountPath: /var/cache/nginx
+              readOnly: false
             - name: nginx-run
               mountPath: /var/run
+              readOnly: false
 
+            # Mount secret as files - safer than env vars (not captured in crash dumps or logs)
+            - name: secret
+              mountPath: /etc/secret
+              readOnly: true
+
+      # Sample volumes - remove the emptyDir entries if your image doesn't need them
       volumes:
         # Scoped emptyDir volumes replace the read-only filesystem for nginx's writable dirs
         - name: tmp
           emptyDir:
             sizeLimit: 64Mi
+
         - name: nginx-cache
           emptyDir:
             sizeLimit: 128Mi
         - name: nginx-run
           emptyDir:
             sizeLimit: 16Mi
+
+        - name: secret
+          secret:
+            # defaultMode 0400 - owner read-only; pods run as non-root so world-read is unnecessary
+            defaultMode: 400
+            secretName: project-n-secret

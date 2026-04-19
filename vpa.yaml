@@ -14,6 +14,6 @@ spec:
     kind: Deployment
     name: project-n-deployment
   updatePolicy:
-    # "Off" means VPA only provides recommendations — it does not restart or resize pods
+    # "Off" means VPA only provides recommendations - it does not restart or resize pods
     # Safe to run alongside HPA since it never mutates the deployment
     updateMode: "Off"
