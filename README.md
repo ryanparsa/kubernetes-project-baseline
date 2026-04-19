@@ -27,15 +27,13 @@ A production-ready baseline for deploying a service on Kubernetes. Replace every
 
 | Type | Dependency | Notes |
 |------|------------|-------|
-| Required CRD | [Gateway API](https://gateway-api.sigs.k8s.io/) | |
-| Required CRD | [Vertical Pod Autoscaler](https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler) | |
-| Gateway controller | [Traefik](https://traefik.io/traefik/) | Update `gatewayClassName` in `gateway.yaml` |
-| Gateway controller | [Envoy Gateway](https://gateway.envoyproxy.io/) | Update `gatewayClassName` in `gateway.yaml` |
-| Gateway controller | [NGINX Gateway Fabric](https://github.com/nginxinc/nginx-gateway-fabric) | Update `gatewayClassName` in `gateway.yaml` |
-| Gateway controller | [Cilium](https://cilium.io/) | Update `gatewayClassName` in `gateway.yaml` |
-| Recommended | [cert-manager](https://cert-manager.io/) | |
-| Recommended | [Sealed Secrets](https://github.com/bitnami-labs/sealed-secrets) | |
-| Recommended | [External Secrets](https://external-secrets.io/) | |
+| Required CRD | [Gateway API](https://gateway-api.sigs.k8s.io/) | Needed for Gateway and HTTPRoute resources |
+| Required CRD | [Vertical Pod Autoscaler](https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler) | Needed for VPA resource |
+| Gateway controller (pick one) | [Traefik](https://traefik.io/traefik/) . [Envoy Gateway](https://gateway.envoyproxy.io/) . [NGINX Gateway Fabric](https://github.com/nginxinc/nginx-gateway-fabric) . [Cilium](https://cilium.io/) | Set `gatewayClassName` in `gateway.yaml` to match your choice |
+| Required | [Metrics Server](https://github.com/kubernetes-sigs/metrics-server) | Needed for HPA to read CPU/memory utilization |
+| Recommended | [cert-manager](https://cert-manager.io/) | Automates TLS certificate provisioning instead of manual `project-n-tls` secret |
+| Recommended | [Sealed Secrets](https://github.com/bitnami-labs/sealed-secrets) | Encrypts secrets for safe GitOps storage |
+| Recommended | [External Secrets](https://external-secrets.io/) | Syncs secrets from external vaults (AWS, GCP, Vault, etc.) |
 
 ## Usage
 
