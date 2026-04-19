@@ -21,18 +21,78 @@ jobs:
         run: kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.1/standard-install.yaml
 
       - name: Install VPA CRDs
-        run: |
-          kubectl apply -f https://raw.githubusercontent.com/kubernetes/autoscaler/vertical-pod-autoscaler-1.2.2/vertical-pod-autoscaler/deploy/vpa-v1-crd-gen.yaml
+        run: kubectl apply -f https://raw.githubusercontent.com/kubernetes/autoscaler/vertical-pod-autoscaler-1.2.2/vertical-pod-autoscaler/deploy/vpa-v1-crd-gen.yaml
 
-      - name: Apply manifests
+      - name: Test Namespace
         run: |
           kubectl apply -f namespace.yaml
-          kubectl apply -f .
+          kubectl get namespace project-n
 
-      - name: Wait for deployment
-        run: kubectl rollout status deployment/project-n-deployment -n project-n --timeout=120s
-
-      - name: Verify resources
+      - name: Test ServiceAccount
         run: |
-          kubectl get all -n project-n
-          kubectl get gateway,httproute -n project-n
+          kubectl apply -f serviceaccount.yaml
+          kubectl get serviceaccount project-n-sa -n project-n
+
+      - name: Test ConfigMap
+        run: |
+          kubectl apply -f configmap.yaml
+          kubectl get configmap project-n-cm -n project-n
+
+      - name: Test Secret
+        run: |
+          kubectl apply -f secret.yaml
+          kubectl get secret project-n-secret -n project-n
+          kubectl get secret project-n-tls -n project-n
+
+      - name: Test ResourceQuota
+        run: |
+          kubectl apply -f resourcequota.yaml
+          kubectl get resourcequota project-n-rq -n project-n
+
+      - name: Test LimitRange
+        run: |
+          kubectl apply -f limitrange.yaml
+          kubectl get limitrange project-n-lr -n project-n
+
+      - name: Test NetworkPolicy
+        run: |
+          kubectl apply -f networkpolicy.yaml
+          kubectl get networkpolicy default-deny-all -n project-n
+          kubectl get networkpolicy allow-gateway-ingress -n project-n
+          kubectl get networkpolicy allow-dns-egress -n project-n
+
+      - name: Test Deployment
+        run: |
+          kubectl apply -f deployment.yaml
+          kubectl get deployment project-n-deployment -n project-n
+
+      - name: Test Service
+        run: |
+          kubectl apply -f service.yaml
+          kubectl get service project-n-svc -n project-n
+
+      - name: Test HPA
+        run: |
+          kubectl apply -f hpa.yaml
+          kubectl get hpa project-n-hpa -n project-n
+
+      - name: Test VPA
+        run: |
+          kubectl apply -f vpa.yaml
+          kubectl get vpa project-n-vpa -n project-n
+
+      - name: Test PDB
+        run: |
+          kubectl apply -f pdb.yaml
+          kubectl get pdb project-n-pdb -n project-n
+
+      - name: Test Gateway
+        run: |
+          kubectl apply -f gateway.yaml
+          kubectl get gateway project-n-gw -n project-n
+
+      - name: Test HTTPRoute
+        run: |
+          kubectl apply -f httproute.yaml
+          kubectl get httproute project-n-redirect -n project-n
+          kubectl get httproute project-n-route -n project-n
