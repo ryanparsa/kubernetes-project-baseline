@@ -11,8 +11,9 @@ metadata:
     app.kubernetes.io/version: "1.0.0"
 spec:
   # replicas is intentionally omitted - managed by HPA
+  # replicas: 1
 
-  # Keep only 3 old ReplicaSets for rollback (default 10 is wasteful)
+  # Keep only 3 old ReplicaSets for rollback
   revisionHistoryLimit: 3
 
   # Fail the rollout if it hasn't progressed within 10 minutes
@@ -65,9 +66,9 @@ spec:
           imagePullPolicy: Always
 
           # Expose the port your application listens on
-          # ports:
-          #   - containerPort: 8080
-          #     protocol: TCP
+          ports:
+            - containerPort: 8080
+              protocol: TCP
 
           resources:
             # Explicit requests/limits ensure HPA has metrics to act on
@@ -81,34 +82,34 @@ spec:
               ephemeral-storage: 128Mi
 
           # Configure probes for your application
-          # livenessProbe:
-          #   httpGet:
-          #     path: /healthz
-          #     port: 8080
-          #   initialDelaySeconds: 10
-          #   periodSeconds: 10
-          #   failureThreshold: 3
-          #
-          # readinessProbe:
-          #   httpGet:
-          #     path: /ready
-          #     port: 8080
-          #   initialDelaySeconds: 5
-          #   periodSeconds: 5
-          #   failureThreshold: 3
-          #
-          # startupProbe:
-          #   httpGet:
-          #     path: /healthz
-          #     port: 8080
-          #   failureThreshold: 30
-          #   periodSeconds: 2
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 3
+
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            failureThreshold: 30
+            periodSeconds: 2
 
           # Drain in-flight requests before SIGTERM is sent
           lifecycle:
             preStop:
               exec:
-                command: ["/bin/sh", "-c", "sleep 5"]
+                command: [ "/bin/sh", "-c", "sleep 5" ]
 
           securityContext:
             # Satisfies PSA restricted profile
