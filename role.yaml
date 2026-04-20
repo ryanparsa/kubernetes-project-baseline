@@ -7,5 +7,29 @@ metadata:
     app.kubernetes.io/name: project-n
     app.kubernetes.io/part-of: project-n
     app.kubernetes.io/managed-by: kubectl
-# No rules by default - add permissions here as your application requires them
+# Grant only what the application actually calls via the K8s API.
+# Use resourceNames to restrict to specific named resources (least privilege).
+# Common starting points - uncomment and trim to what your app needs:
 rules: []
+  # Read own ConfigMap (e.g. dynamic config reload without a restart)
+  # - apiGroups: [""]
+  #   resources: ["configmaps"]
+  #   resourceNames: ["project-n-cm"]
+  #   verbs: ["get", "watch"]
+
+  # Read own Secret (prefer mounting as a file via the Deployment instead)
+  # - apiGroups: [""]
+  #   resources: ["secrets"]
+  #   resourceNames: ["project-n-secret"]
+  #   verbs: ["get"]
+
+  # Emit events (controllers and operators that surface status to kubectl describe)
+  # - apiGroups: [""]
+  #   resources: ["events"]
+  #   verbs: ["create", "patch"]
+
+  # Leader election via Lease (preferred over ConfigMap/Endpoint locks)
+  # - apiGroups: ["coordination.k8s.io"]
+  #   resources: ["leases"]
+  #   resourceNames: ["project-n-leader"]
+  #   verbs: ["get", "create", "update"]

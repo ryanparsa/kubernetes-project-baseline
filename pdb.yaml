@@ -9,9 +9,12 @@ metadata:
     app.kubernetes.io/part-of: project-n
     app.kubernetes.io/managed-by: kubectl
 spec:
-  # Keep at least 2 pods running during voluntary disruptions (node drain, rolling update)
-  # Matches HPA minReplicas: 3 - always leaves one spare for disruptions
-  minAvailable: 2
+  # maxUnavailable scales correctly with HPA - always limits to 1 disruption
+  # regardless of current replica count (unlike a fixed minAvailable: 2)
+  maxUnavailable: 1
+  # Allow eviction of unhealthy pods (crashlooping, OOMKilled) even when at
+  # budget limit, so a broken pod never blocks a node drain or cluster upgrade
+  unhealthyPodEvictionPolicy: AlwaysAllow
   selector:
     matchLabels:
       app.kubernetes.io/name: project-n

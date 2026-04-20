@@ -9,10 +9,31 @@ metadata:
     app.kubernetes.io/managed-by: kubectl
 spec:
   hard:
-    # Total CPU/memory that all pods in the namespace can request and use
+    # Compute - requests drive scheduling; limits cap burst usage
     requests.cpu: "4"
     requests.memory: 4Gi
     limits.cpu: "10"
     limits.memory: 10Gi
-    # Cap at 15 to leave headroom above HPA maxReplicas (10)
+
+    # Pods - headroom above HPA maxReplicas (10) plus rollout surge
     pods: "15"
+
+    # Storage
+    requests.storage: 50Gi
+    persistentvolumeclaims: "10"
+
+    # Workload controllers
+    count/deployments.apps: "10"
+    count/statefulsets.apps: "5"
+    count/daemonsets.apps: "5"
+    count/jobs.batch: "20"
+    count/cronjobs.batch: "10"
+
+    # Networking
+    count/services: "20"
+    count/ingresses.networking.k8s.io: "10"
+
+    # Config & secrets - prevent accidental sprawl
+    count/configmaps: "50"
+    count/secrets: "50"
+    count/serviceaccounts: "20"

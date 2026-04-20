@@ -11,6 +11,7 @@ subjects:
   - kind: ServiceAccount
     name: project-n-sa
     namespace: project-n
+    apiGroup: ""
 roleRef:
   kind: Role
   apiGroup: rbac.authorization.k8s.io

@@ -16,21 +16,45 @@ spec:
   minReplicas: 3
   maxReplicas: 10
   metrics:
-    # Scale out when average CPU utilization across pods exceeds 50%
     - type: Resource
       resource:
         name: cpu
         target:
           type: Utilization
           averageUtilization: 50
-    # Scale out when average memory utilization across pods exceeds 50%
+    # Memory does not compress - apps rarely release it quickly, so memory-driven
+    # scale-down can lag actual demand. Treat this as a ceiling guard, not a
+    # primary signal. Remove if your app does not have predictable memory growth.
     - type: Resource
       resource:
         name: memory
         target:
           type: Utilization
-          averageUtilization: 50
+          averageUtilization: 80
   behavior:
+    scaleUp:
+      # No stabilization on the way up - respond to load spikes immediately
+      stabilizationWindowSeconds: 0
+      selectPolicy: Max
+      policies:
+        # Double replicas every 15s, or add 4 at once - whichever is larger
+        - type: Percent
+          value: 100
+          periodSeconds: 15
+        - type: Pods
+          value: 4
+          periodSeconds: 15
     scaleDown:
-      # Wait 5 minutes of sustained low load before scaling down to avoid thrashing
+      # Require 5 minutes of sustained low load before acting (avoids thrashing)
       stabilizationWindowSeconds: 300
+      # Min picks the most conservative of the two policies each period
+      selectPolicy: Min
+      policies:
+        # Remove at most 25% of current replicas per minute
+        - type: Percent
+          value: 25
+          periodSeconds: 60
+        # Never remove more than 2 pods at once regardless of replica count
+        - type: Pods
+          value: 2
+          periodSeconds: 60

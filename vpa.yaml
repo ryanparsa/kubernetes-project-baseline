@@ -14,6 +14,24 @@ spec:
     kind: Deployment
     name: project-n-deployment
   updatePolicy:
-    # "Off" means VPA only provides recommendations - it does not restart or resize pods
-    # Safe to run alongside HPA since it never mutates the deployment
+    # "Off" - recommendations only, no evictions. Safe alongside HPA because
+    # VPA never mutates the Deployment. Use "Recreate" or "InPlaceOrRecreate"
+    # only after removing HPA or switching HPA to custom/external metrics.
     updateMode: "Off"
+  resourcePolicy:
+    containerPolicies:
+      - containerName: project-n
+        # RequestsOnly - VPA adjusts requests but never touches limits.
+        # Required for safe HPA coexistence: HPA owns the limits signal.
+        controlledValues: RequestsOnly
+        controlledResources:
+          - cpu
+          - memory
+        # Floor: prevents VPA from recommending below the minimum viable baseline
+        minAllowed:
+          cpu: 50m
+          memory: 64Mi
+        # Ceiling: prevents runaway recommendations from exhausting node capacity
+        maxAllowed:
+          cpu: "2"
+          memory: 2Gi
