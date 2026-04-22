@@ -10,6 +10,11 @@ metadata:
     app.kubernetes.io/managed-by: kubectl
 spec:
   type: ClusterIP
+  # Prefer same-zone endpoints to reduce cross-AZ traffic costs and latency (GA since k8s 1.33).
+  # Requires pods to be zone-spread via topologySpreadConstraints (see deployment.yaml).
+  # Caveat: HPA averages metrics cluster-wide and is unaware of per-zone load; pair with
+  # symmetric ingress (e.g. cloud ALB distributing evenly across zones) to avoid zone saturation.
+  trafficDistribution: PreferSameZone
   selector:
     app.kubernetes.io/name: project-n
   ports:

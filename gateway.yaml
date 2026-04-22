@@ -9,8 +9,9 @@ metadata:
     app.kubernetes.io/part-of: project-n
     app.kubernetes.io/managed-by: kubectl
 spec:
-  # Set to match your installed Gateway controller (e.g. traefik, cilium, envoy, nginx)
-  gatewayClassName: "traefik"
+  # Replace with the GatewayClass installed in your cluster:
+  #   traefik | cilium | envoy | nginx-gateway
+  gatewayClassName: "<your-gateway-class>"
   listeners:
     - name: http
       protocol: HTTP

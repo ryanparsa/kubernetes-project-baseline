@@ -51,14 +51,31 @@ spec:
       securityContext:
         seccompProfile:
           type: RuntimeDefault
-      # Spread pods evenly across nodes to avoid single points of failure
+        # Volumes (including secret mounts) are chowned to this GID; use defaultMode 0440
+        # so the non-root process (gid 10000) can read them without world-readable permissions
+        fsGroup: 10000
+      # Zone spread is required for trafficDistribution: PreferSameZone in service.yaml.
+      # Without it the EndpointSlice controller detects imbalance and falls back to
+      # cluster-wide routing, silently defeating topology-aware routing.
+      # ScheduleAnyway keeps single-AZ clusters unblocked.
       topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: project-n
+          # Spread each ReplicaSet independently during rolling updates (stable K8s 1.29)
+          matchLabelKeys:
+            - pod-template-hash
         - maxSkew: 1
           topologyKey: kubernetes.io/hostname
           whenUnsatisfiable: ScheduleAnyway
           labelSelector:
             matchLabels:
               app.kubernetes.io/name: project-n
+          matchLabelKeys:
+            - pod-template-hash
 
       containers:
         - name: project-n
@@ -82,11 +99,12 @@ spec:
               ephemeral-storage: 128Mi
 
           # Configure probes for your application
+          # initialDelaySeconds is omitted on liveness and readiness: the startupProbe
+          # gates both probes until the app is up, making initialDelaySeconds redundant
           livenessProbe:
             httpGet:
               path: /healthz
               port: 8080
-            initialDelaySeconds: 10
             periodSeconds: 10
             failureThreshold: 3
 
@@ -94,7 +112,6 @@ spec:
             httpGet:
               path: /ready
               port: 8080
-            initialDelaySeconds: 5
             periodSeconds: 5
             failureThreshold: 3
 
@@ -106,10 +123,11 @@ spec:
             periodSeconds: 2
 
           # Drain in-flight requests before SIGTERM is sent
+          # Native sleep action (GA K8s 1.30) - no shell binary required in the image
           lifecycle:
             preStop:
-              exec:
-                command: [ "/bin/sh", "-c", "sleep 5" ]
+              sleep:
+                seconds: 5
 
           securityContext:
             # Satisfies PSA restricted profile
@@ -145,6 +163,7 @@ spec:
 
         - name: secret
           secret:
-            # defaultMode 0400 - owner read-only; pods run as non-root so world-read is unnecessary
-            defaultMode: 400
+            # 0440 = owner+group read; fsGroup:10000 chowns files to root:10000 so the
+            # non-root process can read without world-readable permissions
+            defaultMode: 0440
             secretName: project-n-secret

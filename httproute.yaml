@@ -48,6 +48,12 @@ spec:
         - path:
             type: PathPrefix
             value: /
+      # Gateway API v1.1 (K8s 1.31+): prevent hung connections from holding gateway capacity
+      # backendRequest is shorter than request so the gateway can return 504 before a
+      # connection reset reaches the client
+      timeouts:
+        request: 30s
+        backendRequest: 25s
       backendRefs:
         - name: project-n-svc
           port: 80
